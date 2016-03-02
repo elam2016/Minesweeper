@@ -1,5 +1,5 @@
 import de.bezier.guido.*;
-int NUM_ROWS = 40; int NUM_COLS = 40;
+int NUM_ROWS = 30; int NUM_COLS = 30;
 private MSButton[][] buttons; //2d array of minesweeper buttons
 private ArrayList <MSButton> bombs = new ArrayList <MSButton> (); //ArrayList of just the minesweeper buttons that are mined
 public int screenSize;
@@ -9,11 +9,10 @@ public int markCount = 0;
 
 void setup (){
     screenSize = (NUM_ROWS + NUM_COLS)*10;
-    size(800, 820);
+    size(600, 620);
     if(!gameOver){
         textAlign(CENTER,CENTER);
         fill(255);
-        text("Spots marked: " + markCount, 150, 750); 
         // make the manager
         Interactive.make( this );
       
@@ -27,7 +26,7 @@ void setup (){
 }
 
 public void setBombs(){
-  while(bombs.size() < 120){
+  while(bombs.size() <= 80){ 
     int row = (int)(Math.random()*NUM_ROWS);
     int col = (int)(Math.random()*NUM_COLS);
     if(!bombs.contains(buttons[row][col]) && buttons[row][col].isValid(row,col)){
@@ -51,18 +50,37 @@ public void keyPressed(){
 
 public void draw (){
     background( 0 );
-    if(isWon())
+    if(isWon()){
+        markCount = 0;
         displayWinningMessage();
+    }
 }
 
 public boolean isWon(){
-    for(int r=0; r < NUM_ROWS; r++){
-        for(int c=0; c < NUM_COLS; c++){
-            if(!(buttons[r][c].isClicked() && bombs.contains(buttons[r][c])))
-                return false;
+    int countM = 0;
+    int countC = 0;
+    for(int r = 0; r < NUM_ROWS; r++)
+    {
+        for(int c = 0; c < NUM_COLS; c++)
+        {
+            if(buttons[r][c].isMarked()) {
+                countM++;
+            }
+            else if(buttons[r][c].isClicked()) {
+                countC++;
+            }
         }
     }
-    return true;
+    int countB = 0;
+    for(int i = 0; i < bombs.size(); i++){
+        if((bombs.get(i)).isMarked()) {
+            countB++;
+        }
+    }
+    if((countB == bombs.size() && countM + countC == NUM_ROWS*NUM_COLS && countB == countM) || bombs.size() == (NUM_ROWS*NUM_COLS)-countC ) {
+        return true;
+    }
+    return false;
 }
 
 public void displayLosingMessage(){
@@ -126,11 +144,15 @@ public class MSButton{
         }
         if(mouseButton == RIGHT && !isClicked()){
             marked = !marked;
-            markCount++;
+            if(marked)
+                markCount++;
+            if(!marked)
+                markCount--;
         }
         else if(bombs.contains(this) && !marked){
             gameOver = true;
             displayLosingMessage();
+            markCount = 0;
         }
         else if(countBombs(r, c) > 0 && label.equals("")){
             setLabel(label + countBombs(r, c));
@@ -162,6 +184,7 @@ public class MSButton{
         rect(x, y, width, height);
         fill(255);
         text(label,x+width/2,y+height/2);
+        text("Spots marked: " + markCount, 50, screenSize + 10); 
     }
     public void setLabel(String newLabel){
         label = newLabel;
