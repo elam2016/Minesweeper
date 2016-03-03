@@ -26,7 +26,7 @@ void setup (){
 }
 
 public void setBombs(){
-  while(bombs.size() < 10){ 
+  while(bombs.size() < 80){ 
     int row = (int)(Math.random()*NUM_ROWS);
     int col = (int)(Math.random()*NUM_COLS);
     if(!bombs.contains(buttons[row][col]) && buttons[row][col].isValid(row,col)){
