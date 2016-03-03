@@ -26,7 +26,7 @@ void setup (){
 }
 
 public void setBombs(){
-  while(bombs.size() <= 80){ 
+  while(bombs.size() < 10){ 
     int row = (int)(Math.random()*NUM_ROWS);
     int col = (int)(Math.random()*NUM_COLS);
     if(!bombs.contains(buttons[row][col]) && buttons[row][col].isValid(row,col)){
@@ -59,25 +59,20 @@ public void draw (){
 public boolean isWon(){
     int countM = 0;
     int countC = 0;
-    for(int r = 0; r < NUM_ROWS; r++)
-    {
-        for(int c = 0; c < NUM_COLS; c++)
-        {
-            if(buttons[r][c].isMarked()) {
+    for(int r = 0; r < NUM_ROWS; r++){
+        for(int c = 0; c < NUM_COLS; c++){
+            if(buttons[r][c].isMarked())
                 countM++;
-            }
-            else if(buttons[r][c].isClicked()) {
+            else if(buttons[r][c].isClicked())
                 countC++;
-            }
         }
     }
     int countB = 0;
     for(int i = 0; i < bombs.size(); i++){
-        if((bombs.get(i)).isMarked()) {
+        if((bombs.get(i)).isMarked())
             countB++;
-        }
     }
-    if((countB == bombs.size() && countM + countC == NUM_ROWS*NUM_COLS && countB == countM) || bombs.size() == (NUM_ROWS*NUM_COLS)-countC ) {
+    if((countB == bombs.size() && countM + countC == NUM_ROWS*NUM_COLS && countB == countM) && bombs.size() == (NUM_ROWS*NUM_COLS)-countC){
         return true;
     }
     return false;
@@ -85,7 +80,7 @@ public boolean isWon(){
 
 public void displayLosingMessage(){
     gameOver = true;
-    fill(255);
+    fill(0);
     String loser = new String("GAME OVER!");
     for(int r=0; r < NUM_ROWS; r++){
         for(int c=0; c < NUM_COLS; c++){
@@ -97,17 +92,20 @@ public void displayLosingMessage(){
     for(int i=0; i < loser.length(); i++)
     {
         buttons[NUM_ROWS/2][(NUM_COLS/2) - 5 + i].stop = true;
+        fill(0);
         buttons[NUM_ROWS/2][(NUM_COLS/2) - 5 + i].setLabel(loser.substring(i,i+1));
     } 
     fill(0);
 }
 
 public void displayWinningMessage(){
-    fill(255);
+    gameOver = true;
+    fill(0);
     String winner = new String("WINNER!");
     for(int i=0; i < winner.length(); i++)
     {
         buttons[NUM_ROWS/2][(NUM_COLS/2) - 5 + i].stop = true;
+        fill(0);
         buttons[NUM_ROWS/2][(NUM_COLS/2) - 5 + i].setLabel(winner.substring(i,i+1));
     } 
 }
@@ -184,7 +182,8 @@ public class MSButton{
         rect(x, y, width, height);
         fill(255);
         text(label,x+width/2,y+height/2);
-        text("Spots marked: " + markCount, 50, screenSize + 10); 
+        text("Spots marked: " + markCount, 50, screenSize + 10);
+        text("Bombs: " + bombs.size(), 150, screenSize + 10);
     }
     public void setLabel(String newLabel){
         label = newLabel;
